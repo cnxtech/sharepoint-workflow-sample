@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<WorkflowInfo>
+  <Actions>
+    <Action Name="Send Template"
+    ClassName="DocuSignCustomActions.SendTemplateAction"
+    Assembly="DocuSignCustomActions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=be1fb324b15cb4f8"
+    AppliesTo="all" Category="DocuSign">
+      <RuleDesigner
+           Sentence="Send template with these settings - %1, %2, %3, %4, %5 (total packages: %6) (Output to %7)">
+        <FieldBind Field="DSEnvironment" DesignerType="Dropdown" Id="1" Text="Environment">
+          <Option Name="demo.docusign.net" Value="demo.docusign.net" />
+          <Option Name="www.docusign.net" Value="www.docusign.net" />
+          <Option Name="na2.docusign.net" Value="na2.docusign.net" />
+          <Option Name="eu.docusign.net" Value="eu.docusign.net" />
+          <Option Name="eu1.docusign.net" Value="eu1.docusign.net" />
+        </FieldBind>
+        <FieldBind Field="DSIntegratorKey" DesignerType="TextArea" Id="2" Text="IntegratorKey" />
+        <FieldBind Field="DSTemplateId" DesignerType="TextArea" Id="3" Text="TemplateId" />
+        <FieldBind Field="DSUsername" DesignerType="TextArea" Id="4" Text="Username" />
+        <FieldBind Field="DSPassword" DesignerType="TextArea" Id="5" Text="Password" />
+        <FieldBind Field="NumberOfPackages" DesignerType="TextArea" Id="6" Text="NumberOfPackages" />
+        <FieldBind Field="ReturnResult" DesignerType="ParameterNames" Id="7" Text="returnResult" />
+      </RuleDesigner>
+      <Parameters>
+        <Parameter Name="__Context" Type="Microsoft.SharePoint.WorkflowActions.WorkflowContext" Direction="In" DesignerType="Hide" />
+        <Parameter Name="__ListId" Type="System.String, mscorlib" Direction="In" DesignerType="Hide" />
+        <Parameter Name="__ListItem" Type="System.Int32, mscorlib" Direction="In" DesignerType="Hide" />
+        <Parameter Name="DSEnvironment" Type="System.String, mscorlib"  Direction="In" />
+        <Parameter Name="DSIntegratorKey" Type="System.String, mscorlib"  Direction="In" />
+        <Parameter Name="DSTemplateId" Type="System.String, mscorlib"  Direction="In" />
+        <Parameter Name="NumberOfPackages" Type="System.String, mscorlib"  Direction="In" />
+        <Parameter Name="DSUsername" Type="System.String, mscorlib"  Direction="In" />
+        <Parameter Name="DSPassword" Type="System.String, mscorlib"  Direction="In" />
+        <Parameter Name="ReturnResult" Type="System.String, mscorlib"  Direction="Out" />
+        <Parameter Name="__ActivationProperties" Type="Microsoft.SharePoint.Workflow.SPWorkflowActivationProperties, Microsoft.SharePoint" Direction="Out" DesignerType="Hide" />
+      </Parameters>
+    </Action>
+  </Actions>
+</WorkflowInfo>

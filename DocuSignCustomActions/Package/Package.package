@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="10e469eb-5b82-49fd-a67d-487fb6e1567e" solutionId="10e469eb-5b82-49fd-a67d-487fb6e1567e" resetWebServer="false" sharePointProductVersion="15.0" name="DocuSignCustomActions" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <assemblies>
+    <customAssembly location="Newtonsoft.Json.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="bin\Debug\Newtonsoft.Json.dll" />
+    <customAssembly location="RestSharp.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="bin\Debug\RestSharp.dll" />
+    <customAssembly location="DocuSign.eSign.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="bin\Debug\DocuSign.eSign.dll" />
+  </assemblies>
+  <features>
+    <featureReference itemId="e7c0320e-ab9f-4b64-950f-8b5b0657f09e" />
+  </features>
+  <projectItems>
+    <projectItemReference itemId="a7643a84-0f8b-4390-b98a-640dc7b3b608" />
+    <projectItemReference itemId="689a9f01-deed-406b-af25-be9891606075" />
+  </projectItems>
+</package>

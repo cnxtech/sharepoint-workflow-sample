@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<actions>
+  <remove path="configuration/System.Workflow.ComponentModel.WorkflowCompiler/authorizedTypes/targetFx/authorizedType[@Namespace='DocuSignCustomActions'][@TypeName='*']" />
+  <add path="configuration/System.Workflow.ComponentModel.WorkflowCompiler/authorizedTypes/targetFx">
+    <authorizedType Assembly="DocuSignCustomActions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=be1fb324b15cb4f8" Namespace="DocuSignCustomActions" TypeName="*" Authorized="True" />
+  </add>
+</actions>
