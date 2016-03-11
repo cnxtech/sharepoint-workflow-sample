@@ -12,6 +12,9 @@ using System.Workflow.ComponentModel.Compiler;
 
 namespace DocuSignCustomActions
 {
+    /// <summary>
+    /// Activity/Custom Action for sending a DocuSign Template
+    /// </summary>
     public class SendTemplateAction : Activity
     {
         public static DependencyProperty __ContextProperty = DependencyProperty.Register("__Context", typeof(WorkflowContext), typeof(SendTemplateAction));
@@ -215,7 +218,6 @@ namespace DocuSignCustomActions
         /// </summary>
         /// <param name="executionContext"></param>
         /// <returns></returns>
-
         protected override ActivityExecutionStatus Execute(ActivityExecutionContext executionContext)
         {
             this.ReturnResult = "Success";
@@ -243,14 +245,6 @@ namespace DocuSignCustomActions
                     }
                 });
             }
-            catch (WebException ex)
-            {
-                // reprot the error back in the workflow return result
-                var resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
-
-                dynamic obj = JsonConvert.DeserializeObject(resp);
-                this.ReturnResult = string.Format("{0} (DS API)", (string)obj.message);
-            }
             catch (Exception ex)
             {
                 this.ReturnResult = ex.Message;
@@ -258,6 +252,5 @@ namespace DocuSignCustomActions
             
             return ActivityExecutionStatus.Closed;
         }
-
     }
 }

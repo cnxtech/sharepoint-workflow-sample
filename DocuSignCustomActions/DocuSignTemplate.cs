@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
@@ -43,6 +41,54 @@ namespace DocuSignCustomActions
 
             // the authentication api uses the apiClient (and X-DocuSign-Authentication header) that are set in Configuration object
             AuthenticationApi authApi = new AuthenticationApi();
+            accountId = LoginToAccount(accountId, authApi);
+
+            //===========================================================
+            // Step 2: Get Template API
+            //===========================================================
+
+            var envTemp = new EnvelopeTemplate();
+            var templatesApi = new TemplatesApi();
+            // get all template information from DocuSign based on the templateId
+            envTemp = templatesApi.Get(accountId, DSTemplateId);
+
+            //===========================================================
+            // Step 3: Create Envelope API
+            //===========================================================
+
+            var templateRolesList = new List<TemplateRole>();
+            // we will parse the template definition that's returned and read all the recipient
+            // roles of type |signer|. DocuSign supports an additional 6 types of recipients.
+            UpdateRecipientTabsWithValues(values, envTemp.Recipients.Signers, templateRolesList);
+
+            // create a new envelope definition
+            var envDef = new EnvelopeDefinition();
+            envDef.EmailSubject = "[Sent from Sharepoint Workflow] - Please sign this doc:";
+
+            // use the template that is passed in to this function
+            envDef.TemplateId = DSTemplateId;
+
+            // assign the the roles information we read from the template is step 2
+            envDef.TemplateRoles = templateRolesList;
+
+            // set envelope status to "sent" to immediately send the signature request
+            envDef.Status = "sent";
+
+            // |EnvelopesApi| contains methods related to creating and sending Envelopes (aka signature requests)
+            var envelopesApi = new EnvelopesApi();
+            EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(accountId, envDef);
+
+            return envelopeSummary.EnvelopeId;
+        }
+
+        /// <summary>
+        /// Makes an initial login call to API and gets back the needed information
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="authApi"></param>
+        /// <returns></returns>
+        private static string LoginToAccount(string accountId, AuthenticationApi authApi)
+        {
             LoginInformation loginInfo = authApi.Login();
 
             // find the default account for this user
@@ -60,50 +106,11 @@ namespace DocuSignCustomActions
                 accountId = loginInfo.LoginAccounts[0].AccountId;
             }
 
-            //===========================================================
-            // Step 2: Get Template API
-            //===========================================================
-
-            var envTemp = new EnvelopeTemplate();
-            var templatesApi = new TemplatesApi();
-            // get all template information from DocuSign based on the templateId
-            envTemp = templatesApi.Get(accountId, DSTemplateId);
-
-            // we will parse the template definition that's returned and read all the recipient
-            // roles of type |signer|. DocuSign supports an additional 6 types of recipients.
-            var templateRecips = envTemp.Recipients;
-            var signers = new List<Signer>();
-            signers = templateRecips.Signers;
-
-            //===========================================================
-            // Step 3: Create Envelope API
-            //===========================================================
-
-            var templateRolesList = new List<TemplateRole>();
-            UpdateRecipientTabsWithValues(values, signers, templateRolesList);
-
-            // create a new envelope definition
-            var envDef = new EnvelopeDefinition();
-            envDef.EmailSubject = "[Sent from Sharepoint Workflow] - Please sign this doc:";
-
-            // use the template that is passed in to this function
-            envDef.TemplateId = DSTemplateId;
-
-            // assign the the roles information we read from the template is step 2
-            envDef.TemplateRoles = templateRolesList;
-
-            // set envelope status to "sent" to immediately send the signature request
-            envDef.Status = "sent";
-
-            // |EnvelopesApi| contains methods related to creating and sending Envelopes (aka signature requests)
-            EnvelopesApi envelopesApi = new EnvelopesApi();
-            EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(accountId, envDef);
-
-            return envelopeSummary.EnvelopeId;
-        } 
+            return accountId;
+        }
 
         /// <summary>
-        /// Update the Total Number of Packages tab with the value
+        /// Update the Total Number of Packages tab with the value (singer type tabs only)
         /// </summary>
         /// <param name="values">a pair of name/value objects to update</param>
         /// <param name="signers">Collection of signer objects</param>
@@ -121,16 +128,14 @@ namespace DocuSignCustomActions
                     foreach (string val in values.Keys)
                     {
                         // check to see if any text tabs assigned to this recipient match any of our values
-                        var textTabs = new List<Text>();
                         if (tabs.TextTabs != null)
                         {
-                            textTabs = tabs.TextTabs;
-                            for (int j = 0; j < textTabs.Count; j++)
+                            foreach (var tab in tabs.TextTabs)
                             {
                                 // if we find a textTab with a matching name - update its value
-                                if (string.Compare(textTabs[j].TabLabel, val) == 0)
+                                if (string.Compare(tab.TabLabel, val) == 0)
                                 {
-                                    tabs.TextTabs[j].Value = values[val];
+                                    tab.Value = values[val];
                                 }
                             }
                         }
